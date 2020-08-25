@@ -6,6 +6,7 @@ import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 import { Auth0Provider } from './providers/Auth0Provider';
+import { AuthorizedApolloProvider } from './providers/ApolloProvider';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -15,9 +16,11 @@ export default function App() {
     return null;
   } else {
     return (
-      <SafeAreaProvider >
+      <SafeAreaProvider>
         <Auth0Provider>
-          <Navigation colorScheme={colorScheme} />
+          <AuthorizedApolloProvider>
+            <Navigation colorScheme={colorScheme} />
+          </AuthorizedApolloProvider>
         </Auth0Provider>
         <StatusBar />
       </SafeAreaProvider>
