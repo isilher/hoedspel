@@ -67,6 +67,16 @@ const TAKE_TURN = gql`
   }
 `
 
+const RESET_ROUND = gql`
+  mutation resetRound($game: Int!) {
+    update_names(where: {game_id: {_eq: $game}}, _set: {claimed: false}) {
+      returning {
+        id
+      }
+    }
+  }
+`;
+
 export const GameScreen: React.FC = () => {
   const { auth0Id } = useContext(Auth0Context)
   const { game, hosting } = useContext(GameContext)
@@ -76,6 +86,7 @@ export const GameScreen: React.FC = () => {
   const [freezeNames] = useMutation(FREEZE_NAMES, { refetchQueries: ['getMyGame'] })
   const [createName] = useMutation(CREATE_NAME, { refetchQueries: ['getMyGame'] })
   const [takeTurn] = useMutation(TAKE_TURN, { refetchQueries: ['getMyGame'] })
+  const [resetRound] = useMutation(RESET_ROUND, { refetchQueries: ['getMyGame'] })
   const [newName, setNewName] = useState('')
   const [nameContribution, setNameContribution] = useState(0)
 
@@ -173,6 +184,27 @@ export const GameScreen: React.FC = () => {
     takeTurn({variables: { game: game.id, userId: auth0Id}})
   }
 
+  const onResetRoundPress = () => {
+    Alert.alert(
+      "Nieuwe ronde starten",
+      "In de nieuwe ronde gaan alle namen weer terug de hoed in. Zorg dat de scores opgeschreven staan.",
+      [
+        {
+          text: "Nee, nog niet",
+          style: "cancel",
+        },
+        {
+          text: "Ja, herstarten maar!",
+          onPress: () => {
+            resetRound({
+              variables: { game: game.id },
+            });
+          },
+        },
+      ]
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View>
@@ -184,44 +216,88 @@ export const GameScreen: React.FC = () => {
 
         <Text style={styles.title}>Spelers:</Text>
         {game.players.map((player) => {
-          return <Text key={player.id.toString()}>{player.name}</Text>
+          return <Text key={player.id.toString()}>{player.name}</Text>;
         })}
       </View>
 
-      {game.started && <View>
-        <Text style={styles.nameCountingTitle}>Namen in de 🎩: {game.names.length}.</Text>
-
-        {!game.names_frozen && <View>
-          <View style={styles.row}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Naam voor in de hoed"
-              value={newName}
-              onChangeText={setNewName}
-              />
-            <Button title=" + " onPress={onCreateNamePress} />
-          </View>
-          <Text>Jij hebt er {nameContribution} toegevoegd.</Text>
-        </View>}
-
-        {game.names_frozen && !game.active_player && <Button color='#BA7CC6' title="Het is mijn beurt, ik ga presenteren." onPress={onTakeTurnPress} />}
-        {game.names_frozen && !!game.active_player &&
-          <Text style={styles.title}>
-            🕺 {game.active_player.name} is aan het presenteren.
+      {game.started && (
+        <View>
+          <Text style={styles.nameCountingTitle}>
+            Namen in de 🎩: {game.names.length}.
           </Text>
-        }
-      </View>}
 
+          {!game.names_frozen && (
+            <View>
+              <View style={styles.row}>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Naam voor in de hoed"
+                  value={newName}
+                  onChangeText={setNewName}
+                />
+                <Button title=" + " onPress={onCreateNamePress} />
+              </View>
+              <Text>Jij hebt er {nameContribution} toegevoegd.</Text>
+            </View>
+          )}
+
+          {game.names_frozen && !game.active_player && !!game.names.length && (
+            <Button
+              color="#BA7CC6"
+              title="Het is mijn beurt, ik ga presenteren."
+              onPress={onTakeTurnPress}
+            />
+          )}
+          {game.names_frozen && !!game.active_player && (
+            <Text style={styles.title}>
+              🕺 {game.active_player.name} is aan het presenteren.
+            </Text>
+          )}
+          {game.names_frozen && !game.names.length && (
+            <Text>
+              De maker van het spel kan een nieuwe ronde starten. Vergeet niet de
+              puntentelling op te schrijven!
+            </Text>
+          )}
+        </View>
+      )}
 
       <View>
-        {hosting && !game.started && <Button color='#BA7CC6' title="Starten" onPress={onStartGamePress} />}
-        {hosting && game.started && !game.names_frozen && <Button color='#BA7CC6' title="Hoed sluiten" onPress={onFreezeNamesPress} />}
+        {hosting && !game.started && (
+          <Button color="#BA7CC6" title="Starten" onPress={onStartGamePress} />
+        )}
+        {hosting && game.started && !game.names_frozen && (
+          <Button
+            color="#BA7CC6"
+            title="Hoed sluiten"
+            onPress={onFreezeNamesPress}
+          />
+        )}
+        {hosting && game.names_frozen && !game.names.length && (
+          <Button
+            color="#BA7CC6"
+            title="Nieuwe ronde starten"
+            onPress={onResetRoundPress}
+          />
+        )}
         <Divider />
-        {hosting && <Button color='#d22461' title="Spel verwijderen" onPress={onDestroyGamePress} />}
-        {!hosting && !game.started && <Button color='#d22461' title="Spel verlaten" onPress={onLeaveGamePress} />}
+        {hosting && (
+          <Button
+            color="#d22461"
+            title="Spel verwijderen"
+            onPress={onDestroyGamePress}
+          />
+        )}
+        {!hosting && !game.started && (
+          <Button
+            color="#d22461"
+            title="Spel verlaten"
+            onPress={onLeaveGamePress}
+          />
+        )}
       </View>
     </View>
-  )
+  );
 }
 
 

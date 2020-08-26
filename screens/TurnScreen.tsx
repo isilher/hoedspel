@@ -44,7 +44,7 @@ export const TurnScreen = () => {
   });
 
   const onEndTurnPress = () => {
-    if (!name) { return endTurn() }
+    if (!randomAvailableName) { return endTurn() }
 
     Alert.alert(
       "Spel verwijderen",
@@ -70,13 +70,13 @@ export const TurnScreen = () => {
 
   return (
     <View style={styles.container}>
-      {!!name && <Button color="#BA7CC6" title="🎉 Geraden!" onPress={onClaimNamePress} />}
+      {!!randomAvailableName && <Button color="#BA7CC6" title="🎉 Geraden!" onPress={onClaimNamePress} />}
 
       <View style={styles.container}>
-        {!!name && (
+        {!!randomAvailableName && (
           <Text style={styles.randomName}>{randomAvailableName?.name}</Text>
         )}
-        {!name && (
+        {!randomAvailableName && (
           <>
             <Text style={styles.randomName}>👍</Text>
             <Text style={styles.title}>De namen zijn op! Goed gedaan.</Text>
