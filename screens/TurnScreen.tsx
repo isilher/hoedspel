@@ -21,8 +21,8 @@ const END_TURN = gql`
 `
 
 const CLAIM_NAME = gql`
-  mutation claimName($name: Int!) {
-    update_names(where: {id: {_eq: $name}}, _set: {claimed: true}) {
+  mutation claimName($name: Int!, $userId: String!) {
+    update_names(where: {id: {_eq: $name}}, _set: {claimed: true, claimer_id: $userId}) {
       returning {
         id
       }
@@ -39,7 +39,7 @@ export const TurnScreen = () => {
     refetchQueries: ['getMyGame']
   })
   const [claimName] = useMutation(CLAIM_NAME, {
-    variables: { name: randomAvailableName?.id },
+    variables: { name: randomAvailableName?.id, userId: auth0Id },
     refetchQueries: ["getMyGame"],
   });
 

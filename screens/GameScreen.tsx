@@ -216,7 +216,11 @@ export const GameScreen: React.FC = () => {
 
         <Text style={styles.title}>Spelers:</Text>
         {game.players.map((player) => {
-          return <Text key={player.id.toString()}>{player.name}</Text>;
+          const claimedGameNames = player.claimed_names || []
+          const score = claimedGameNames.filter(
+            (claimedName) => claimedName.game_id === game.id
+          ).length;
+          return <Text key={player.id.toString()}>{player.name} ({score} punten)</Text>;
         })}
       </View>
 
