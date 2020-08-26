@@ -9,13 +9,26 @@ import { Alert } from '../components/Alert'
 
 const END_TURN = gql`
   mutation takeTurn($game: Int!, $userId: String!) {
-    update_games(where: {id: {_eq: $game}}, _set: {active_player_id: null}) {
+    update_games(
+      where: { id: { _eq: $game } }
+      _set: { active_player_id: null }
+    ) {
       returning {
         id
       }
     }
   }
 `
+
+const CLAIM_NAME = gql`
+  mutation claimName($name: Int!) {
+    update_names(where: {id: {_eq: $name}}, _set: {claimed: true}) {
+      returning {
+        id
+      }
+    }
+}
+`;
 
 export const TurnScreen = () => {
   const { game } = useContext(GameContext)
@@ -25,8 +38,14 @@ export const TurnScreen = () => {
     variables: { game: game.id, userId: auth0Id },
     refetchQueries: ['getMyGame']
   })
+  const [claimName] = useMutation(CLAIM_NAME, {
+    variables: { name: randomAvailableName?.id },
+    refetchQueries: ["getMyGame"],
+  });
 
   const onEndTurnPress = () => {
+    if (!name) { return endTurn() }
+
     Alert.alert(
       "Spel verwijderen",
       "Weet je zeker dat je je beurt wilt afsluiten?",
@@ -45,13 +64,31 @@ export const TurnScreen = () => {
     )
   }
 
+  const onClaimNamePress = () => {
+    claimName()
+  }
+
   return (
     <View style={styles.container}>
+      {!!name && <Button color="#BA7CC6" title="🎉 Geraden!" onPress={onClaimNamePress} />}
+
       <View style={styles.container}>
-        <Text style={styles.randomName}>{randomAvailableName?.name}</Text>
+        {!!name && (
+          <Text style={styles.randomName}>{randomAvailableName?.name}</Text>
+        )}
+        {!name && (
+          <>
+            <Text style={styles.randomName}>👍</Text>
+            <Text style={styles.title}>De namen zijn op! Goed gedaan.</Text>
+          </>
+        )}
       </View>
 
-      <Button title="Beurt beëindigen" onPress={onEndTurnPress} />
+      <Button
+        color="#d22461"
+        title="Beurt beëindigen"
+        onPress={onEndTurnPress}
+      />
     </View>
   );
 }
@@ -59,11 +96,17 @@ export const TurnScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 15,
   },
   randomName: {
     fontSize: 72,
-    fontWeight: 'bold'
-  }
-})
+    fontWeight: "bold",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 15,
+  },
+});
