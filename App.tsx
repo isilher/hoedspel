@@ -8,11 +8,13 @@ import { AuthorizedApolloProvider } from './providers/ApolloProvider';
 import LobbyScreen from './screens/LobbyScreen';
 import { GameProvider, GameContext } from './providers/GameProvider';
 import { GameScreen } from './screens/GameScreen';
+import { TurnScreen } from './screens/TurnScreen';
 
 const AppContent: React.FC = () => {
-  const { game } = useContext(GameContext)
+  const { game, myTurn } = useContext(GameContext)
 
-  if(!!game) return <GameScreen game={game} />
+  if(!!myTurn) return <TurnScreen />
+  if(!!game) return <GameScreen />
 
   return <LobbyScreen />
 }
