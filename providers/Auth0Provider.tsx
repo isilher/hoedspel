@@ -16,18 +16,21 @@ const nonce = (Date.now() * Math.random()).toString();
 export interface IAuth0Context {
   token: string;
   name: string;
+  auth0Id: string;
   isAuthorized: boolean;
 }
 
 export const Auth0Context = React.createContext<IAuth0Context>({
   token: "",
   name: "",
+  auth0Id: "",
   isAuthorized: false,
 });
 
 export const Auth0Provider: React.FC = ({ children }) => {
   const [name, setName] = React.useState('');
   const [token, setToken] = React.useState('');
+  const [auth0Id, setAuth0Id] = React.useState('');
   const [isAuthorized, setIsAuthorized] = React.useState(false)
 
   const [request, result, promptAsync] = AuthSession.useAuthRequest(
@@ -64,18 +67,19 @@ export const Auth0Provider: React.FC = ({ children }) => {
         const jwtToken = result.params.id_token;
         const decoded = jwtDecode(jwtToken);
         // @ts-expect-error
-        const { name } = decoded;
+        const { name, sub } = decoded;
 
         setName(name);
-        setToken(jwtToken)
-        setIsAuthorized(true)
+        setToken(jwtToken);
+        setAuth0Id(sub);
+        setIsAuthorized(true);
       }
     }
   }, [result]);
 
   return (
     <View style={styles.container}>
-      <Auth0Context.Provider value={{ token, name, isAuthorized }}>
+      <Auth0Context.Provider value={{ token, name, auth0Id, isAuthorized }}>
         {isAuthorized ? children : (
           <View style={styles.buttonContainer}>
             <Button
