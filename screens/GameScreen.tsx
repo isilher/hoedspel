@@ -1,5 +1,5 @@
-import React, { useContext } from 'react'
-import { StyleSheet, Button } from 'react-native'
+import React, { useContext, useState } from 'react'
+import { StyleSheet, Button, TextInput } from 'react-native'
 import { Text, View } from '../components/Themed';
 import { GameContext } from '../providers/GameProvider'
 import { Divider } from '../components/Divider';
@@ -37,12 +37,25 @@ const START_GAME = gql`
   }
 `
 
+const CREATE_NAME = gql`
+  mutation createName($game: Int!, $name: String!) {
+    insert_names(objects: {game_id: $game, name: $name}) {
+      returning {
+        id
+      }
+    }
+  }
+`
+
 export const GameScreen: React.FC = () => {
   const { auth0Id } = useContext(Auth0Context)
   const { game, hosting } = useContext(GameContext)
   const [leaveGame] = useMutation(LEAVE_GAME, { refetchQueries: ['getOpenGames', 'getMyGame'] })
   const [destroyGame] = useMutation(DESTROY_GAME, { refetchQueries: ['getOpenGames', 'getMyGame'] })
   const [startGame] = useMutation(START_GAME, { refetchQueries: ['getMyGame'] })
+  const [createName] = useMutation(CREATE_NAME, { refetchQueries: ['getMyGame'] })
+  const [newName, setNewName] = useState('')
+  const [nameContribution, setNameContribution] = useState(0)
 
   const onLeaveGamePress = () => {
     Alert.alert(
@@ -107,6 +120,12 @@ export const GameScreen: React.FC = () => {
     )
   }
 
+  const onCreateNamePress = () => {
+    createName({ variables: {game: game.id, name: newName}})
+    setNewName('')
+    setNameContribution((previousContribution) => previousContribution + 1)
+  }
+
   return (
     <View style={styles.container}>
       <View>
@@ -121,6 +140,20 @@ export const GameScreen: React.FC = () => {
           return <Text key={player.id.toString()}>{player.name}</Text>
         })}
       </View>
+
+      {game.started && <View>
+        <Text style={styles.nameCountingTitle}>Namen in de 🎩: {game.names.length}.</Text>
+        <View style={styles.row}>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Naam voor in de hoed"
+            value={newName}
+            onChangeText={setNewName}
+            />
+          <Button title=" + " onPress={onCreateNamePress} />
+        </View>
+        <Text>Je hebt er {nameContribution} toegevoegd.</Text>
+      </View>}
 
 
       <View>
@@ -148,6 +181,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     width: '100%',
+    marginBottom: 10,
   },
   separator: {
     marginVertical: 30,
@@ -179,5 +213,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#BA7CC6',
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  nameCountingTitle: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    marginBottom: 15
   }
 });
