@@ -28,7 +28,21 @@ const CREATE_NEW_GAME = gql`
   }
 `;
 
+const JOIN_GAME = gql`
+  mutation joinGame($game: Int!, $userId: String!) {
+    update_users(where: {auth0_id: {_eq: $userId}}, _set: {game_id: $game}) {
+      returning {
+        game_id
+      }
+    }
+  }
+`
+
+
 const GameListItem = ({ game }) => {
+  const { auth0Id } = React.useContext(Auth0Context)
+  const [joinGame] = useMutation(JOIN_GAME, { refetchQueries: ['getOpenGames'] })
+
   return (
     <View style={styles.gameListItem}>
       <View>
@@ -36,7 +50,9 @@ const GameListItem = ({ game }) => {
         <Text>{game.players.map((player) => player.name).join(', ')}</Text>
       </View>
       <View>
-        <Button color="#BA7CC6" title="meedoen" onPress={() => {}} />
+        <Button color="#BA7CC6" title="meedoen" onPress={() => {
+          joinGame({ variables: { game: game.id, userId: auth0Id }})
+        }} />
       </View>
     </View>
   )
@@ -45,8 +61,9 @@ const GameListItem = ({ game }) => {
 export default function LobbyScreen() {
   const [newGameName, setNewGameName] = React.useState('')
   const { name, auth0Id } = React.useContext(Auth0Context)
-  const { loading, data } = useQuery(GET_OPEN_GAMES);
-  const [createGame] = useMutation(CREATE_NEW_GAME)
+  const { loading, data } = useQuery(GET_OPEN_GAMES, { pollInterval: 5000 });
+  const [createGame] = useMutation(CREATE_NEW_GAME, { refetchQueries: ['getOpenGames'] })
+
   const openGames = data?.games ?? []
 
   const createNewGame = () => {
