@@ -57,6 +57,16 @@ const FREEZE_NAMES = gql`
   }
 `
 
+const TAKE_TURN = gql`
+  mutation takeTurn($game: Int!, $userId: String!) {
+    update_games(where: {id: {_eq: $game}}, _set: {active_player_id: $userId}) {
+      returning {
+        id
+      }
+    }
+  }
+`
+
 export const GameScreen: React.FC = () => {
   const { auth0Id } = useContext(Auth0Context)
   const { game, hosting } = useContext(GameContext)
@@ -65,6 +75,7 @@ export const GameScreen: React.FC = () => {
   const [startGame] = useMutation(START_GAME, { refetchQueries: ['getMyGame'] })
   const [freezeNames] = useMutation(FREEZE_NAMES, { refetchQueries: ['getMyGame'] })
   const [createName] = useMutation(CREATE_NAME, { refetchQueries: ['getMyGame'] })
+  const [takeTurn] = useMutation(TAKE_TURN, { refetchQueries: ['getMyGame'] })
   const [newName, setNewName] = useState('')
   const [nameContribution, setNameContribution] = useState(0)
 
@@ -158,6 +169,10 @@ export const GameScreen: React.FC = () => {
     setNameContribution((previousContribution) => previousContribution + 1)
   }
 
+  const onTakeTurnPress = () => {
+    takeTurn({variables: { game: game.id, userId: auth0Id}})
+  }
+
   return (
     <View style={styles.container}>
       <View>
@@ -188,6 +203,13 @@ export const GameScreen: React.FC = () => {
           </View>
           <Text>Jij hebt er {nameContribution} toegevoegd.</Text>
         </View>}
+
+        {game.names_frozen && !game.active_player && <Button color='#BA7CC6' title="Het is mijn beurt, ik ga presenteren." onPress={onTakeTurnPress} />}
+        {game.names_frozen && !!game.active_player &&
+          <Text style={styles.title}>
+            🕺 {game.active_player.name} is aan het presenteren.
+          </Text>
+        }
       </View>}
 
 

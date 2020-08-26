@@ -29,6 +29,10 @@ const GET_MY_GAME = gql`
         }
         started
         names_frozen
+        active_player {
+          id
+          name
+        }
       }
     }
   }
