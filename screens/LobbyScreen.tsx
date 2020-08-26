@@ -34,6 +34,7 @@ const JOIN_GAME = gql`
     update_users(where: {auth0_id: {_eq: $userId}}, _set: {game_id: $game}) {
       returning {
         game_id
+        id
       }
     }
   }

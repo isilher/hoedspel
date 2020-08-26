@@ -17,6 +17,7 @@ export const GameContext = React.createContext<IGameContext>({
 const GET_MY_GAME = gql`
   query getMyGame($userId: String!) {
     users(where: { auth0_id: { _eq: $userId } }) {
+      id
       game {
         host_id
         id
@@ -38,6 +39,7 @@ const GET_MY_GAME = gql`
         active_player {
           auth0_id
           name
+          id
         }
       }
     }

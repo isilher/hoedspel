@@ -11,6 +11,7 @@ const LEAVE_GAME = gql`
   mutation leaveGame($userId: String!) {
     update_users(where: {auth0_id: {_eq: $userId}}, _set: {game_id: null}) {
       returning {
+        id
         game_id
       }
     }
