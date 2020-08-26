@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { AppRegistry } from "react-native";
 import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, NormalizedCacheObject } from "@apollo/client";
 import { Auth0Context } from "./Auth0Provider";
 

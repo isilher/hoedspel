@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { StyleSheet, ActivityIndicator, TextInput, Button, FlatList } from 'react-native';
+import { StyleSheet, ActivityIndicator, TextInput, Button, FlatList, Dimensions } from 'react-native';
 
 import { Text, View } from '../components/Themed';
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { Auth0Context } from '../providers/Auth0Provider';
+import { Divider } from '../components/Divider';
 
 const GET_OPEN_GAMES = gql`
   query getOpenGames {
@@ -41,12 +42,12 @@ const JOIN_GAME = gql`
 
 const GameListItem = ({ game }) => {
   const { auth0Id } = React.useContext(Auth0Context)
-  const [joinGame] = useMutation(JOIN_GAME, { refetchQueries: ['getOpenGames'] })
+  const [joinGame] = useMutation(JOIN_GAME, { refetchQueries: ['getOpenGames', 'getMyGame'] })
 
   return (
     <View style={styles.gameListItem}>
       <View>
-        <Text key={game.id} style={styles.title}>{game.name}</Text>
+        <Text style={styles.title}>{game.name}</Text>
         <Text>{game.players.map((player) => player.name).join(', ')}</Text>
       </View>
       <View>
@@ -62,7 +63,17 @@ export default function LobbyScreen() {
   const [newGameName, setNewGameName] = React.useState('')
   const { name, auth0Id } = React.useContext(Auth0Context)
   const { loading, data } = useQuery(GET_OPEN_GAMES, { pollInterval: 5000 });
-  const [createGame] = useMutation(CREATE_NEW_GAME, { refetchQueries: ['getOpenGames'] })
+  const [joinGame] = useMutation(JOIN_GAME, { refetchQueries: ['getOpenGames', 'getMyGame'] })
+  const [createGame] = useMutation(
+    CREATE_NEW_GAME,
+    {
+      refetchQueries: ['getOpenGames'],
+      onCompleted: (result) => {
+        // Join the game you created
+        joinGame({ variables: { game: result?.insert_games?.returning[0]?.id, userId: auth0Id }})
+      }
+    }
+  )
 
   const openGames = data?.games ?? []
 
@@ -74,7 +85,7 @@ export default function LobbyScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Hoi {name}!</Text>
 
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+      <Divider />
 
       <Text style={styles.title}>Kies een spel om aan mee te doen:</Text>
 
@@ -84,9 +95,10 @@ export default function LobbyScreen() {
         style={styles.flatList}
         data={openGames}
         renderItem={({item}) => <GameListItem game={item} />}
+        keyExtractor={(item) => item.id.toString()}
       />
 
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+      <Divider />
 
       <Text style={styles.title}>Of maak een nieuw spel aan:</Text>
 
@@ -109,6 +121,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 15,
+    height: Dimensions.get("window").height
   },
   title: {
     fontSize: 20,
@@ -118,11 +131,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     width: '100%',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
   },
   gameListItem: {
     padding: 15,
@@ -141,9 +149,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   flatList: {
-    flex: 1,
+    // flex: 1,
     backgroundColor: '#FFE3EC',
-    width: '100%'
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#FFE3EC'
   },
   playButton: {
     backgroundColor: '#BA7CC6',

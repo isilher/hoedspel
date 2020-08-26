@@ -1,11 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useContext } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import useCachedResources from './hooks/useCachedResources';
 import { Auth0Provider } from './providers/Auth0Provider';
 import { AuthorizedApolloProvider } from './providers/ApolloProvider';
 import LobbyScreen from './screens/LobbyScreen';
+import { GameProvider, GameContext } from './providers/GameProvider';
+import { GameScreen } from './screens/GameScreen';
+
+const AppContent: React.FC = () => {
+  const { game } = useContext(GameContext)
+
+  if(!!game) return <GameScreen game={game} />
+
+  return <LobbyScreen />
+}
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -17,7 +27,11 @@ export default function App() {
       <SafeAreaProvider>
         <Auth0Provider>
           <AuthorizedApolloProvider>
-            <LobbyScreen />
+            <GameProvider>
+
+              <AppContent />
+
+            </GameProvider>
           </AuthorizedApolloProvider>
         </Auth0Provider>
         <StatusBar />
