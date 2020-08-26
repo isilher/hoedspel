@@ -47,12 +47,23 @@ const CREATE_NAME = gql`
   }
 `
 
+const FREEZE_NAMES = gql`
+  mutation freezeNames($game: Int!) {
+    update_games(where: {id: {_eq: $game}}, _set: {names_frozen: true}) {
+      returning {
+        id
+      }
+    }
+  }
+`
+
 export const GameScreen: React.FC = () => {
   const { auth0Id } = useContext(Auth0Context)
   const { game, hosting } = useContext(GameContext)
   const [leaveGame] = useMutation(LEAVE_GAME, { refetchQueries: ['getOpenGames', 'getMyGame'] })
   const [destroyGame] = useMutation(DESTROY_GAME, { refetchQueries: ['getOpenGames', 'getMyGame'] })
   const [startGame] = useMutation(START_GAME, { refetchQueries: ['getMyGame'] })
+  const [freezeNames] = useMutation(FREEZE_NAMES, { refetchQueries: ['getMyGame'] })
   const [createName] = useMutation(CREATE_NAME, { refetchQueries: ['getMyGame'] })
   const [newName, setNewName] = useState('')
   const [nameContribution, setNameContribution] = useState(0)
@@ -120,6 +131,27 @@ export const GameScreen: React.FC = () => {
     )
   }
 
+  const onFreezeNamesPress = () => {
+    Alert.alert(
+      "Hoed sluiten",
+      "Weet je zeker dat je de hoed wilt sluiten? Er kunnen daarna geen namen meer bij.",
+      [
+        {
+          text: 'Nee, nog niet',
+          style: 'cancel'
+        },
+        {
+          text: 'Ja, sluiten maar!',
+          onPress: () => {
+            freezeNames({
+              variables: { game: game.id },
+            })
+          }
+        }
+      ]
+    )
+  }
+
   const onCreateNamePress = () => {
     createName({ variables: {game: game.id, name: newName}})
     setNewName('')
@@ -143,21 +175,25 @@ export const GameScreen: React.FC = () => {
 
       {game.started && <View>
         <Text style={styles.nameCountingTitle}>Namen in de 🎩: {game.names.length}.</Text>
-        <View style={styles.row}>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Naam voor in de hoed"
-            value={newName}
-            onChangeText={setNewName}
-            />
-          <Button title=" + " onPress={onCreateNamePress} />
-        </View>
-        <Text>Je hebt er {nameContribution} toegevoegd.</Text>
+
+        {!game.names_frozen && <View>
+          <View style={styles.row}>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Naam voor in de hoed"
+              value={newName}
+              onChangeText={setNewName}
+              />
+            <Button title=" + " onPress={onCreateNamePress} />
+          </View>
+          <Text>Jij hebt er {nameContribution} toegevoegd.</Text>
+        </View>}
       </View>}
 
 
       <View>
         {hosting && !game.started && <Button color='#BA7CC6' title="Starten" onPress={onStartGamePress} />}
+        {hosting && game.started && !game.names_frozen && <Button color='#BA7CC6' title="Hoed sluiten" onPress={onFreezeNamesPress} />}
         <Divider />
         {hosting && <Button color='#d22461' title="Spel verwijderen" onPress={onDestroyGamePress} />}
         {!hosting && !game.started && <Button color='#d22461' title="Spel verlaten" onPress={onLeaveGamePress} />}

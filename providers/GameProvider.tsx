@@ -23,7 +23,12 @@ const GET_MY_GAME = gql`
           name
           id
         }
+        names(where: {claimed: {_eq: false}}) {
+          name
+          id
+        }
         started
+        names_frozen
       }
     }
   }
