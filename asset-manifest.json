@@ -4,8 +4,8 @@
     "app.js.map": "/hoedspel/static/js/app.13805e95.chunk.js.map",
     "runtime~app.js": "/hoedspel/static/js/runtime~app.f2c68294.js",
     "runtime~app.js.map": "/hoedspel/static/js/runtime~app.f2c68294.js.map",
-    "static/js/2.cc53c87e.chunk.js": "/hoedspel/static/js/2.cc53c87e.chunk.js",
-    "static/js/2.cc53c87e.chunk.js.map": "/hoedspel/static/js/2.cc53c87e.chunk.js.map",
+    "static/js/2.3b9803ee.chunk.js": "/hoedspel/static/js/2.3b9803ee.chunk.js",
+    "static/js/2.3b9803ee.chunk.js.map": "/hoedspel/static/js/2.3b9803ee.chunk.js.map",
     "fonts/AntDesign.ttf": "/hoedspel/./fonts/AntDesign.ttf",
     "fonts/Entypo.ttf": "/hoedspel/./fonts/Entypo.ttf",
     "fonts/Feather.ttf": "/hoedspel/./fonts/Feather.ttf",
@@ -25,11 +25,11 @@
     "index.html": "/hoedspel/index.html",
     "manifest.json": "/hoedspel/manifest.json",
     "serve.json": "/hoedspel/serve.json",
-    "static/js/2.cc53c87e.chunk.js.LICENSE.txt": "/hoedspel/static/js/2.cc53c87e.chunk.js.LICENSE.txt"
+    "static/js/2.3b9803ee.chunk.js.LICENSE.txt": "/hoedspel/static/js/2.3b9803ee.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime~app.f2c68294.js",
-    "static/js/2.cc53c87e.chunk.js",
+    "static/js/2.3b9803ee.chunk.js",
     "static/js/app.13805e95.chunk.js"
   ]
 }
