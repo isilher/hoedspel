@@ -4,6 +4,7 @@ import * as React from "react";
 import { Alert, Platform, StyleSheet } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { Text, View, Button } from "../components/Themed";
+import AsyncStorage from '@react-native-community/async-storage';
 
 const auth0ClientId = "Gj9Y0KJGtJNCm1SZrUqRODvIc84dwrAY";
 const authorizationEndpoint = "https://dev-5hh3kz1x.eu.auth0.com/authorize";
@@ -38,6 +39,33 @@ export const Auth0Provider: React.FC = ({ children }) => {
   const [auth0Id, setAuth0Id] = React.useState('');
   const [isAuthorized, setIsAuthorized] = React.useState(false)
 
+
+  const storeToken = async (receivedToken: string) => {
+    console.log(receivedToken)
+    try {
+      await AsyncStorage.setItem("@token", receivedToken);
+    } catch (e) {
+      console.log("could not save token");
+    }
+  };
+
+  const getToken = async () => {
+    try {
+      const value = await AsyncStorage.getItem("@token");
+      if (value !== null) {
+        const decoded = jwtDecode(value);
+        // @ts-expect-error
+        const { nickname, sub } = decoded;
+        setName(nickname);
+        setToken(token);
+        setAuth0Id(sub);
+        setIsAuthorized(true);
+      }
+    } catch (e) {
+      console.log("could not retrieve token");
+    }
+  };
+
   const [request, result, promptAsync] = AuthSession.useAuthRequest(
     {
       redirectUri,
@@ -53,7 +81,7 @@ export const Auth0Provider: React.FC = ({ children }) => {
 
   // Retrieve the redirect URL, add this to the callback URL list
   // of your Auth0 application.
-  console.log(`Redirect URL: ${redirectUri}`);
+  // console.log(`Redirect URL: ${redirectUri}`);
 
   React.useEffect(() => {
     if (result) {
@@ -70,11 +98,13 @@ export const Auth0Provider: React.FC = ({ children }) => {
       if (result.type === "success") {
         // Retrieve the JWT token and decode it
         const jwtToken = result.params.id_token;
+        storeToken(jwtToken);
+
         const decoded = jwtDecode(jwtToken);
         // @ts-expect-error
         const { nickname, sub } = decoded;
 
-        console.log(decoded)
+        // console.log(decoded)
 
         setName(nickname);
         setToken(jwtToken);
@@ -83,6 +113,10 @@ export const Auth0Provider: React.FC = ({ children }) => {
       }
     }
   }, [result]);
+
+  React.useEffect(() => {
+    getToken()
+  }, [])
 
   return (
     <View style={styles.container}>
