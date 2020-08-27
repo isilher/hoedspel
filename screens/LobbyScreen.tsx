@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { StyleSheet, ActivityIndicator, TextInput, Button, FlatList, Dimensions } from 'react-native';
+import { StyleSheet, ActivityIndicator, TextInput, FlatList, Dimensions } from 'react-native';
 
-import { Text, View } from '../components/Themed';
+import { Text, View, Button } from '../components/Themed';
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { Auth0Context } from '../providers/Auth0Provider';
 import { Divider } from '../components/Divider';
@@ -121,7 +121,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 15,
+    paddingVertical: 50,
+    paddingHorizontal: 15,
     height: Dimensions.get("window").height
   },
   title: {
@@ -150,7 +151,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   flatList: {
-    // flex: 1,
     backgroundColor: '#FFE3EC',
     width: '100%',
     borderWidth: 1,

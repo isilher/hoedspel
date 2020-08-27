@@ -9,6 +9,7 @@ import LobbyScreen from './screens/LobbyScreen';
 import { GameProvider, GameContext } from './providers/GameProvider';
 import { GameScreen } from './screens/GameScreen';
 import { TurnScreen } from './screens/TurnScreen';
+import { View } from "./components/Themed";
 
 const AppContent: React.FC = () => {
   const { game, myTurn } = useContext(GameContext)
@@ -31,7 +32,7 @@ export default function App() {
           <AuthorizedApolloProvider>
             <GameProvider>
 
-              <AppContent />
+                <AppContent />
 
             </GameProvider>
           </AuthorizedApolloProvider>

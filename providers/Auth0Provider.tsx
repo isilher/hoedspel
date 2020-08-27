@@ -1,8 +1,9 @@
 import * as AuthSession from "expo-auth-session";
 import jwtDecode from "jwt-decode";
 import * as React from "react";
-import { Alert, Button, Platform, StyleSheet, Text, View } from "react-native";
+import { Alert, Platform, StyleSheet } from "react-native";
 import * as WebBrowser from "expo-web-browser";
+import { Text, View, Button } from "../components/Themed";
 
 const auth0ClientId = "Gj9Y0KJGtJNCm1SZrUqRODvIc84dwrAY";
 const authorizationEndpoint = "https://dev-5hh3kz1x.eu.auth0.com/authorize";
@@ -67,9 +68,11 @@ export const Auth0Provider: React.FC = ({ children }) => {
         const jwtToken = result.params.id_token;
         const decoded = jwtDecode(jwtToken);
         // @ts-expect-error
-        const { name, sub } = decoded;
+        const { nickname, sub } = decoded;
 
-        setName(name);
+        console.log(decoded)
+
+        setName(nickname);
         setToken(jwtToken);
         setAuth0Id(sub);
         setIsAuthorized(true);
@@ -80,8 +83,11 @@ export const Auth0Provider: React.FC = ({ children }) => {
   return (
     <View style={styles.container}>
       <Auth0Context.Provider value={{ token, name, auth0Id, isAuthorized }}>
-        {isAuthorized ? children : (
+        {isAuthorized ? (
+          children
+        ) : (
           <View style={styles.buttonContainer}>
+            <Text style={{marginBottom: 50, fontSize: 100}}>🎩</Text>
             <Button
               disabled={!request}
               title="Log in"

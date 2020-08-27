@@ -1,7 +1,7 @@
-import React, { useContext } from 'react'
-import { StyleSheet, Button } from 'react-native'
+import React, { useContext, useEffect, useState } from "react";
+import { StyleSheet, ActivityIndicator } from 'react-native'
 import { sample } from 'lodash'
-import { View, Text } from "../components/Themed"
+import { View, Text, Button } from "../components/Themed"
 import { GameContext } from '../providers/GameProvider'
 import { gql, useMutation } from '@apollo/client'
 import { Auth0Context } from '../providers/Auth0Provider'
@@ -15,6 +15,9 @@ const END_TURN = gql`
     ) {
       returning {
         id
+        names {
+          name
+        }
       }
     }
   }
@@ -33,15 +36,20 @@ const CLAIM_NAME = gql`
 export const TurnScreen = () => {
   const { game } = useContext(GameContext)
   const { auth0Id } = useContext(Auth0Context)
-  const randomAvailableName = sample(game.names)
+  const [randomAvailableName, setRandomAvailableName] = useState()
+  // const randomAvailableName = sample(game.names)
   const [endTurn] = useMutation(END_TURN, {
     variables: { game: game.id, userId: auth0Id },
     refetchQueries: ['getMyGame']
   })
-  const [claimName] = useMutation(CLAIM_NAME, {
+  const [claimName, { loading }] = useMutation(CLAIM_NAME, {
     variables: { name: randomAvailableName?.id, userId: auth0Id },
     refetchQueries: ["getMyGame"],
   });
+
+  useEffect(() => {
+    setRandomAvailableName(sample(game.names))
+  }, [game.names])
 
   const onEndTurnPress = () => {
     if (!randomAvailableName) { return endTurn() }
@@ -65,18 +73,27 @@ export const TurnScreen = () => {
   }
 
   const onClaimNamePress = () => {
+
     claimName()
   }
 
   return (
     <View style={styles.container}>
-      {!!randomAvailableName && <Button color="#BA7CC6" title="🎉 Geraden!" onPress={onClaimNamePress} />}
+      {!!randomAvailableName && (
+        <Button
+          disabled={loading}
+          color="#BA7CC6"
+          title="🎉 Geraden!"
+          onPress={onClaimNamePress}
+        />
+      )}
 
       <View style={styles.container}>
-        {!!randomAvailableName && (
+        {loading && <ActivityIndicator />}
+        {!!randomAvailableName && !loading && (
           <Text style={styles.randomName}>{randomAvailableName?.name}</Text>
         )}
-        {!randomAvailableName && (
+        {!randomAvailableName && !loading && (
           <>
             <Text style={styles.randomName}>👍</Text>
             <Text style={styles.title}>De namen zijn op! Goed gedaan.</Text>
@@ -88,6 +105,7 @@ export const TurnScreen = () => {
         color="#d22461"
         title="Beurt beëindigen"
         onPress={onEndTurnPress}
+        disabled={loading}
       />
     </View>
   );
@@ -98,7 +116,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 15,
+    paddingVertical: 50,
+    paddingHorizontal: 15,
   },
   randomName: {
     fontSize: 72,

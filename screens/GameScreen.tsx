@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
-import { StyleSheet, Button, TextInput } from 'react-native'
-import { Text, View } from '../components/Themed';
+import { StyleSheet, TextInput } from 'react-native'
+import { Text, View, Button } from '../components/Themed';
 import { GameContext } from '../providers/GameProvider'
 import { Divider } from '../components/Divider';
 import { gql, useMutation } from '@apollo/client';
@@ -310,7 +310,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    padding: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 50,
   },
   title: {
     fontSize: 20,
