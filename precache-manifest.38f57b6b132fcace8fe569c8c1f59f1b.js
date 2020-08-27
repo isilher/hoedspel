@@ -8,8 +8,8 @@ self.__precacheManifest = [
     "url": "/hoedspel/static/js/runtime~app.f2c68294.js"
   },
   {
-    "revision": "15cae1f36928a5ff67f8",
-    "url": "/hoedspel/static/js/2.3b9803ee.chunk.js"
+    "revision": "28b0565a7610701c3ff7",
+    "url": "/hoedspel/static/js/2.cb61ecc9.chunk.js"
   },
   {
     "revision": "b2e0fc821c6886fb3940f85a3320003e",
@@ -64,7 +64,7 @@ self.__precacheManifest = [
     "url": "/hoedspel/./fonts/SimpleLineIcons.ttf"
   },
   {
-    "revision": "6bae6fc20b9d7be4e76534f7ba1214ae",
+    "revision": "b8fef0744f7114ce7fb4f456a349cd74",
     "url": "/hoedspel/index.html"
   },
   {
@@ -81,7 +81,7 @@ self.__precacheManifest = [
   },
   {
     "revision": "e0f7f808b0e4815795fb184e7ab4e065",
-    "url": "/hoedspel/static/js/2.3b9803ee.chunk.js.LICENSE.txt"
+    "url": "/hoedspel/static/js/2.cb61ecc9.chunk.js.LICENSE.txt"
   },
   {
     "revision": "71033553ddc0843407efe54c23890fe2",
