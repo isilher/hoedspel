@@ -8,7 +8,7 @@ import { Auth0Context } from '../providers/Auth0Provider'
 import { Alert } from '../components/Alert'
 
 const END_TURN = gql`
-  mutation takeTurn($game: Int!, $userId: String!) {
+  mutation takeTurn($game: Int!, $userId: uuid!) {
     update_games(
       where: { id: { _eq: $game } }
       _set: { active_player_id: null }
@@ -24,7 +24,7 @@ const END_TURN = gql`
 `
 
 const CLAIM_NAME = gql`
-  mutation claimName($name: Int!, $userId: String!) {
+  mutation claimName($name: Int!, $userId: uuid!) {
     update_names(where: {id: {_eq: $name}}, _set: {claimed: true, claimer_id: $userId}) {
       returning {
         id

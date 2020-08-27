@@ -8,8 +8,8 @@ import { Alert } from '../components/Alert';
 import { Auth0Context } from '../providers/Auth0Provider';
 
 const LEAVE_GAME = gql`
-  mutation leaveGame($userId: String!) {
-    update_users(where: {auth0_id: {_eq: $userId}}, _set: {game_id: null}) {
+  mutation leaveGame($userId: uuid!) {
+    update_users(where: {auth_id: {_eq: $userId}}, _set: {game_id: null}) {
       returning {
         id
         game_id
@@ -59,7 +59,7 @@ const FREEZE_NAMES = gql`
 `
 
 const TAKE_TURN = gql`
-  mutation takeTurn($game: Int!, $userId: String!) {
+  mutation takeTurn($game: Int!, $userId: uuid!) {
     update_games(where: {id: {_eq: $game}}, _set: {active_player_id: $userId}) {
       returning {
         id

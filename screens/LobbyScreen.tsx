@@ -19,7 +19,7 @@ const GET_OPEN_GAMES = gql`
 `;
 
 const CREATE_NEW_GAME = gql`
-  mutation createGame($name: String!, $userId: String!) {
+  mutation createGame($name: String!, $userId: uuid!) {
     insert_games(objects: {name: $name, host_id: $userId}) {
       returning {
         name
@@ -30,8 +30,8 @@ const CREATE_NEW_GAME = gql`
 `;
 
 const JOIN_GAME = gql`
-  mutation joinGame($game: Int!, $userId: String!) {
-    update_users(where: {auth0_id: {_eq: $userId}}, _set: {game_id: $game}) {
+  mutation joinGame($game: Int!, $userId: uuid!) {
+    update_users(where: {auth_id: {_eq: $userId}}, _set: {game_id: $game}) {
       returning {
         game_id
         id

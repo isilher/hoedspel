@@ -28,15 +28,15 @@ export default function App() {
   } else {
     return (
       <SafeAreaProvider>
-        <Auth0Provider>
           <AuthorizedApolloProvider>
-            <GameProvider>
+            <Auth0Provider>
+              <GameProvider>
 
                 <AppContent />
 
-            </GameProvider>
+              </GameProvider>
+            </Auth0Provider>
           </AuthorizedApolloProvider>
-        </Auth0Provider>
         <StatusBar />
       </SafeAreaProvider>
     );

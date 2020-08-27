@@ -1,23 +1,28 @@
-import * as AuthSession from "expo-auth-session";
-import jwtDecode from "jwt-decode";
 import * as React from "react";
-import { Alert, Platform, StyleSheet } from "react-native";
-import * as WebBrowser from "expo-web-browser";
+import { StyleSheet, TextInput } from "react-native";
 import { Text, View, Button } from "../components/Themed";
 import AsyncStorage from '@react-native-community/async-storage';
+import { gql, useMutation, useLazyQuery } from "@apollo/client";
 
-const auth0ClientId = "Gj9Y0KJGtJNCm1SZrUqRODvIc84dwrAY";
-const authorizationEndpoint = "https://dev-5hh3kz1x.eu.auth0.com/authorize";
+const NEW_USER = gql`
+  mutation newUser($name: String!, $randomness: String!) {
+    insert_users(objects: {name: $name, auth0_id_a: $randomness }) {
+      returning {
+        auth_id
+        name
+      }
+    }
+  }
+`
 
-const useProxy = Platform.select({ web: false, default: true });
-let redirectUri = AuthSession.makeRedirectUri({ useProxy });
-if (redirectUri === "https://isilher.github.io") {
-  redirectUri = "https://isilher.github.io/hoedspel";
-}
-
-WebBrowser.maybeCompleteAuthSession();
-
-const nonce = (Date.now() * Math.random()).toString();
+const GET_USER = gql`
+  query getUser($token: uuid!) {
+    users(where: { auth_id: {_eq: $token} }) {
+      auth_id
+      name
+    }
+  }
+`;
 
 export interface IAuth0Context {
   token: string;
@@ -40,6 +45,29 @@ export const Auth0Provider: React.FC = ({ children }) => {
   const [isAuthorized, setIsAuthorized] = React.useState(false)
 
 
+  const [newUser, { loading }] = useMutation(NEW_USER, {
+    onCompleted: (response) => {
+      const newUserObject = response?.insert_users?.returning[0];
+
+      setAuth0Id(newUserObject.auth_id);
+      setIsAuthorized(true);
+      storeToken(newUserObject.auth_id);
+    },
+  });
+
+  const [getUser] = useLazyQuery(GET_USER, { onCompleted: (response) => {
+      const user = response?.users[0];
+
+      setAuth0Id(user.auth_id);
+      setName(user.name)
+      setIsAuthorized(true);
+    },
+  });
+
+  const createNewUser = () => {
+    newUser({ variables: { name, randomness: "💩" + Date.now().toString() } });
+  }
+
   const storeToken = async (receivedToken: string) => {
     console.log(receivedToken)
     try {
@@ -53,69 +81,15 @@ export const Auth0Provider: React.FC = ({ children }) => {
     try {
       const value = await AsyncStorage.getItem("@token");
       if (value !== null) {
-        const decoded = jwtDecode(value);
-        // @ts-expect-error
-        const { nickname, sub } = decoded;
-        setName(nickname);
-        setToken(token);
-        setAuth0Id(sub);
-        setIsAuthorized(true);
+        getUser({variables: { token: value }})
       }
     } catch (e) {
       console.log("could not retrieve token");
     }
   };
 
-  const [request, result, promptAsync] = AuthSession.useAuthRequest(
-    {
-      redirectUri,
-      clientId: auth0ClientId,
-      responseType: "id_token",
-      scopes: ["openid", "profile"],
-      extraParams: {
-        nonce,
-      },
-    },
-    { authorizationEndpoint }
-  );
-
-  // Retrieve the redirect URL, add this to the callback URL list
-  // of your Auth0 application.
-  // console.log(`Redirect URL: ${redirectUri}`);
-
   React.useEffect(() => {
-    if (result) {
-      // @ts-expect-error
-      if (result.error) {
-        Alert.alert(
-          "Authentication error",
-          // @ts-expect-error
-          result.params.error_description || "something went wrong"
-        );
-        return;
-      }
-
-      if (result.type === "success") {
-        // Retrieve the JWT token and decode it
-        const jwtToken = result.params.id_token;
-        storeToken(jwtToken);
-
-        const decoded = jwtDecode(jwtToken);
-        // @ts-expect-error
-        const { nickname, sub } = decoded;
-
-        // console.log(decoded)
-
-        setName(nickname);
-        setToken(jwtToken);
-        setAuth0Id(sub);
-        setIsAuthorized(true);
-      }
-    }
-  }, [result]);
-
-  React.useEffect(() => {
-    getToken()
+    if (!token) getToken()
   }, [])
 
   return (
@@ -126,10 +100,11 @@ export const Auth0Provider: React.FC = ({ children }) => {
         ) : (
           <View style={styles.buttonContainer}>
             <Text style={{marginBottom: 50, fontSize: 100}}>🎩</Text>
+            <TextInput style={styles.textInput} value={name} onChangeText={setName} placeholder="Je naam" />
             <Button
-              disabled={!request}
-              title="Log in"
-              onPress={() => promptAsync({ useProxy })}
+              disabled={loading || name === ''}
+              title="Spelen maar!"
+              onPress={createNewUser}
             />
           </View>
         )}
@@ -140,11 +115,17 @@ export const Auth0Provider: React.FC = ({ children }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   buttonContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%',
-  }
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+  },
+  textInput: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "blue",
+    marginBottom: 15
+  },
 });

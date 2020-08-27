@@ -8,11 +8,11 @@ const createApolloClient = (
 ): ApolloClient<NormalizedCacheObject> => {
   const link = new HttpLink({
     uri: "https://sweeping-jay-28.hasura.app/v1/graphql",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      // 'X-Hasura-Role': 'user',
-      // 'X-Hasura-User-Id': userId
-    },
+    // headers: {
+    //   // Authorization: `Bearer ${token}`,
+    //   // 'X-Hasura-Role': 'user',
+    //   // 'X-Hasura-User-Id': userId
+    // },
   });
   return new ApolloClient({
     link,

@@ -15,8 +15,8 @@ export const GameContext = React.createContext<IGameContext>({
 });
 
 const GET_MY_GAME = gql`
-  query getMyGame($userId: String!) {
-    users(where: { auth0_id: { _eq: $userId } }) {
+  query getMyGame($userId: uuid!) {
+    users(where: { auth_id: { _eq: $userId } }) {
       id
       game {
         host_id
@@ -37,7 +37,7 @@ const GET_MY_GAME = gql`
         started
         names_frozen
         active_player {
-          auth0_id
+          auth_id
           name
           id
         }
@@ -51,7 +51,7 @@ export const GameProvider: React.FC = ({ children }) => {
   const {data} = useQuery(GET_MY_GAME, { variables: { userId: auth0Id }})
   const game = data?.users ? data.users[0].game : undefined
   const hosting = game && game.host_id === auth0Id
-  const myTurn = game && game?.active_player?.auth0_id === auth0Id
+  const myTurn = game && game?.active_player?.auth_id === auth0Id
 
   return (
     <GameContext.Provider value={{ game, hosting, myTurn }}>
