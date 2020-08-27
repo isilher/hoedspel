@@ -1,7 +1,7 @@
 {
   "files": {
-    "app.js": "/hoedspel/static/js/app.46b20996.chunk.js",
-    "app.js.map": "/hoedspel/static/js/app.46b20996.chunk.js.map",
+    "app.js": "/hoedspel/static/js/app.9bb4d35a.chunk.js",
+    "app.js.map": "/hoedspel/static/js/app.9bb4d35a.chunk.js.map",
     "runtime~app.js": "/hoedspel/static/js/runtime~app.f2c68294.js",
     "runtime~app.js.map": "/hoedspel/static/js/runtime~app.f2c68294.js.map",
     "static/js/2.f482aaff.chunk.js": "/hoedspel/static/js/2.f482aaff.chunk.js",
@@ -30,6 +30,6 @@
   "entrypoints": [
     "static/js/runtime~app.f2c68294.js",
     "static/js/2.f482aaff.chunk.js",
-    "static/js/app.46b20996.chunk.js"
+    "static/js/app.9bb4d35a.chunk.js"
   ]
 }
