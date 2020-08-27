@@ -1,7 +1,7 @@
 self.__precacheManifest = [
   {
-    "revision": "4f7e2f5303e5c4df5aa5",
-    "url": "/hoedspel/static/js/app.18a1f8ff.chunk.js"
+    "revision": "d2021f89a7a087a0df15",
+    "url": "/hoedspel/static/js/app.e3f22720.chunk.js"
   },
   {
     "revision": "eb641bff62f782fa41c3",
@@ -64,7 +64,7 @@ self.__precacheManifest = [
     "url": "/hoedspel/./fonts/SimpleLineIcons.ttf"
   },
   {
-    "revision": "a8a1890553a6b29628dbc75362551313",
+    "revision": "d0c29ffe068e45d60a989c73f6525025",
     "url": "/hoedspel/index.html"
   },
   {
