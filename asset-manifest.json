@@ -1,0 +1,35 @@
+{
+  "files": {
+    "app.js": "/hoedspel/static/js/app.3b830803.chunk.js",
+    "app.js.map": "/hoedspel/static/js/app.3b830803.chunk.js.map",
+    "runtime~app.js": "/hoedspel/static/js/runtime~app.f2c68294.js",
+    "runtime~app.js.map": "/hoedspel/static/js/runtime~app.f2c68294.js.map",
+    "static/js/2.f482aaff.chunk.js": "/hoedspel/static/js/2.f482aaff.chunk.js",
+    "static/js/2.f482aaff.chunk.js.map": "/hoedspel/static/js/2.f482aaff.chunk.js.map",
+    "fonts/AntDesign.ttf": "/hoedspel/./fonts/AntDesign.ttf",
+    "fonts/Entypo.ttf": "/hoedspel/./fonts/Entypo.ttf",
+    "fonts/Feather.ttf": "/hoedspel/./fonts/Feather.ttf",
+    "fonts/FontAwesome.ttf": "/hoedspel/./fonts/FontAwesome.ttf",
+    "fonts/FontAwesome5_Brands.ttf": "/hoedspel/./fonts/FontAwesome5_Brands.ttf",
+    "fonts/FontAwesome5_Solid.ttf": "/hoedspel/./fonts/FontAwesome5_Solid.ttf",
+    "fonts/Fontisto.ttf": "/hoedspel/./fonts/Fontisto.ttf",
+    "fonts/Foundation.ttf": "/hoedspel/./fonts/Foundation.ttf",
+    "fonts/Ionicons.ttf": "/hoedspel/./fonts/Ionicons.ttf",
+    "fonts/MaterialCommunityIcons.ttf": "/hoedspel/./fonts/MaterialCommunityIcons.ttf",
+    "fonts/MaterialIcons.ttf": "/hoedspel/./fonts/MaterialIcons.ttf",
+    "fonts/SimpleLineIcons.ttf": "/hoedspel/./fonts/SimpleLineIcons.ttf",
+    "fonts/SpaceMono-Regular.ttf": "/hoedspel/./fonts/SpaceMono-Regular.ttf",
+    "favicon-16.png": "/hoedspel/favicon-16.png",
+    "favicon-32.png": "/hoedspel/favicon-32.png",
+    "favicon.ico": "/hoedspel/favicon.ico",
+    "index.html": "/hoedspel/index.html",
+    "manifest.json": "/hoedspel/manifest.json",
+    "serve.json": "/hoedspel/serve.json",
+    "static/js/2.f482aaff.chunk.js.LICENSE.txt": "/hoedspel/static/js/2.f482aaff.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime~app.f2c68294.js",
+    "static/js/2.f482aaff.chunk.js",
+    "static/js/app.3b830803.chunk.js"
+  ]
+}
