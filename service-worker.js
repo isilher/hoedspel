@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/hoedspel/precache-manifest.b45c896f9c0183891ef181f5f8edcdd4.js"
+  "/hoedspel/precache-manifest.d2c1f5aa9b92f631f22502a4ab2c9f7e.js"
 );
 
 workbox.skipWaiting();
