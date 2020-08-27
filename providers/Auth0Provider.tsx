@@ -9,7 +9,11 @@ const auth0ClientId = "Gj9Y0KJGtJNCm1SZrUqRODvIc84dwrAY";
 const authorizationEndpoint = "https://dev-5hh3kz1x.eu.auth0.com/authorize";
 
 const useProxy = Platform.select({ web: false, default: true });
-const redirectUri = AuthSession.makeRedirectUri({ useProxy });
+let redirectUri = AuthSession.makeRedirectUri({ useProxy });
+if (redirectUri === "https://isilher.github.io") {
+  redirectUri = "https://isilher.github.io/hoedspel";
+}
+
 WebBrowser.maybeCompleteAuthSession();
 
 const nonce = (Date.now() * Math.random()).toString();
