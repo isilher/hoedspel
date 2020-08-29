@@ -79,7 +79,7 @@ const TAKE_TURN = gql`
 
 const RESET_ROUND = gql`
   mutation resetRound($game: Int!) {
-    update_names(where: {game_id: {_eq: $game}}, _set: {claimed: false}) {
+    update_names(where: {game_id: {_eq: $game}}, _set: {claimed: false, claimer_id: null}) {
       returning {
         id
       }
