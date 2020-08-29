@@ -74,7 +74,7 @@ export const Auth0Provider: React.FC = ({ children }) => {
     },
   });
 
-  const [getUser, { loading: loadingUser }] = useLazyQuery(GET_USER, { onCompleted: (response) => {
+  const [getUser, { loading: loadingUser }] = useLazyQuery(GET_USER, { fetchPolicy: 'network-only', onCompleted: (response) => {
       const user = response?.users[0];
 
       setAuth0Id(user.auth_id);
@@ -87,7 +87,7 @@ export const Auth0Provider: React.FC = ({ children }) => {
     },
   });
 
-  const  [getOma, { loading: loadingOma }] = useLazyQuery(GET_OMA, { onCompleted: (response) => {
+  const  [getOma, { loading: loadingOma }] = useLazyQuery(GET_OMA, { fetchPolicy: 'network-only', onCompleted: (response) => {
     const oma = response?.users[0];
 
     setAuth0Id(oma.auth_id);
