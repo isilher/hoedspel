@@ -24,10 +24,18 @@ export const END_TURN = gql`
 `
 
 const CLAIM_NAME = gql`
-  mutation claimName($name: Int!, $userId: uuid!) {
+  mutation claimName($game: Int!, $name: Int!, $userId: uuid!, $next_name: Int) {
     update_names(where: {id: {_eq: $name}}, _set: {claimed: true, claimer_id: $userId}) {
       returning {
         id
+      }
+    }
+    update_games(where: {id: {_eq: $game }}, _set: {current_name_id: $next_name}) {
+      returning {
+        id
+        names {
+          id
+        }
       }
     }
 }
@@ -35,24 +43,24 @@ const CLAIM_NAME = gql`
 
 export const TurnScreen = () => {
   const { game } = useContext(GameContext)
-  const { auth0Id, isOma } = useContext(Auth0Context)
-  const [randomAvailableName, setRandomAvailableName] = useState()
-  // const randomAvailableName = sample(game.names)
+
+  const getNextNameId = () => {
+    const nextName = sample(game.unclaimed_names.filter((name) => name.id !== game?.current_name?.id))
+    return nextName?.id
+  }
+
+  const { isOma } = useContext(Auth0Context)
   const [endTurn] = useMutation(END_TURN, {
     variables: { game: game.id },
     refetchQueries: ['getMyGame']
   })
   const [claimName, { loading }] = useMutation(CLAIM_NAME, {
-    variables: { name: randomAvailableName?.id, userId: auth0Id },
+    variables: { game: game.id, name: game?.current_name?.id, userId: game?.active_player?.auth_id, next_name: getNextNameId() },
     refetchQueries: ["getMyGame"],
   });
 
-  useEffect(() => {
-    setRandomAvailableName(sample(game.names))
-  }, [game.names])
-
   const onEndTurnPress = () => {
-    if (!randomAvailableName) { return endTurn() }
+    if (!game.current_name) { return endTurn() }
 
     Alert.alert(
       "Spel verwijderen",
@@ -72,11 +80,6 @@ export const TurnScreen = () => {
     )
   }
 
-  const onClaimNamePress = () => {
-
-    claimName()
-  }
-
   return (
     <View style={styles.container}>
 
@@ -84,14 +87,14 @@ export const TurnScreen = () => {
 
       <View style={styles.container}>
         {loading && <ActivityIndicator />}
-        {!!randomAvailableName && !loading && (
+        {!!game?.current_name && !loading && (
           <>
             {isOma && <Text style={{fontSize: 32, marginBottom: 50}}>Het is jouw beurt, oma!</Text>}
             {isOma && <Text style={{fontSize: 32, marginBottom: 150}}>De naam is:</Text>}
-            <Text style={styles.randomName}>{randomAvailableName?.name}</Text>
+            <Text style={styles.randomName}>{game?.current_name?.name}</Text>
           </>
         )}
-        {!randomAvailableName && !loading && (
+        {game?.unclaimed_names?.length < 1 && !loading && (
           <View style={{flex: 1}}>
             <Text style={{ fontSize: 72, textAlign: 'center'}}>👍</Text>
             <Text style={styles.title}>De namen zijn op! Goed gedaan.</Text>
@@ -111,10 +114,10 @@ export const TurnScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {!!randomAvailableName && <View style={{width: 20}} />}
+        {game?.unclaimed_names?.length > 0 && <View style={{width: 20}} />}
 
-        {!!randomAvailableName && <View style={{ flex: 1 }}>
-          <TouchableOpacity disabled={loading} onPress={onClaimNamePress} >
+        {game?.unclaimed_names?.length > 0 && <View style={{ flex: 1 }}>
+          <TouchableOpacity disabled={loading} onPress={() => claimName()} >
             <View style={{ minHeight: 140, backgroundColor: "#CEFA05", padding: 10, paddingVertical: 20, borderRadius: 5, borderColor: 'purple', borderWidth: 1, justifyContent: 'space-between', alignItems: 'center' }}>
 
               <Text style={{ fontSize: 32, marginBottom: 10 }}>🎉</Text>

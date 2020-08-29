@@ -7,6 +7,7 @@ import { gql, useMutation } from '@apollo/client';
 import { Alert } from '../components/Alert';
 import { Auth0Context } from '../providers/Auth0Provider';
 import { END_TURN } from './TurnScreen';
+import { sample } from 'lodash';
 
 const LEAVE_GAME = gql`
   mutation leaveGame($userId: uuid!) {
@@ -67,6 +68,16 @@ const FREEZE_NAMES = gql`
   }
 `
 
+const SET_FIRST_NAME = gql`
+  mutation setFirstName($game: Int!, $first_name: Int!) {
+    update_games(where: {id: {_eq: $game}}, _set: {current_name_id: $first_name}) {
+      returning {
+        id
+      }
+    }
+  }
+`
+
 const TAKE_TURN = gql`
   mutation takeTurn($game: Int!, $userId: uuid!) {
     update_games(where: {id: {_eq: $game}}, _set: {active_player_id: $userId}) {
@@ -94,6 +105,7 @@ export const GameScreen: React.FC = () => {
   const [destroyGame] = useMutation(DESTROY_GAME, { refetchQueries: ['getOpenGames', 'getMyGame'] })
   const [startGame] = useMutation(START_GAME, { refetchQueries: ['getMyGame'] })
   const [freezeNames] = useMutation(FREEZE_NAMES, { refetchQueries: ['getMyGame'] })
+  const [setFirstName] = useMutation(SET_FIRST_NAME, { refetchQueries: ['getMyGame'] })
   const [createName] = useMutation(CREATE_NAME, { refetchQueries: ['getMyGame'] })
   const [takeTurn] = useMutation(TAKE_TURN, { refetchQueries: ['getMyGame'] })
   const [resetRound] = useMutation(RESET_ROUND, { refetchQueries: ['getMyGame'] })
@@ -178,6 +190,8 @@ export const GameScreen: React.FC = () => {
           onPress: () => {
             freezeNames({
               variables: { game: game.id },
+            }).then(() => {
+              setFirstName({ variables: { game: game.id, first_name: sample(game.unclaimed_names).id }})
             })
           }
         }
@@ -217,6 +231,8 @@ export const GameScreen: React.FC = () => {
           onPress: () => {
             resetRound({
               variables: { game: game.id },
+            }).then(() => {
+              setFirstName({ variables: { game: game.id, first_name: sample(game.names).id } });
             });
           },
         },
@@ -252,7 +268,9 @@ export const GameScreen: React.FC = () => {
       {game.started && (
         <View>
           <Text style={styles.nameCountingTitle}>
-            Namen in de 🎩: {game.names.length}.
+            Namen in de 🎩: &nbsp;
+            {game.names_frozen && <Text>{game?.unclaimed_names?.length} / </Text>}
+            {game?.unclaimed_names?.length}.
           </Text>
 
           {!game.names_frozen && (
@@ -270,14 +288,14 @@ export const GameScreen: React.FC = () => {
             </View>
           )}
 
-          {game.names_frozen && !game.active_player && !!game.names.length && (
+          {game.names_frozen && !game.active_player && !!game.unclaimed_names.length && (
             <Button
               color="#BA7CC6"
               title="Het is mijn beurt, ik ga presenteren."
               onPress={onTakeTurnPress}
             />
           )}
-          {hosting  && game.names_frozen && !game.active_player && !!game.names.length && (
+          {hosting  && game.names_frozen && !game.active_player && !!game.unclaimed_names.length && (
             <>
               <Divider />
               <Button
@@ -302,7 +320,7 @@ export const GameScreen: React.FC = () => {
               />
             </>
           )}
-          {game.names_frozen && !game.names.length && (
+          {game.names_frozen && !game.unclaimed_names.length && (
             <Text>
               De maker van het spel kan een nieuwe ronde starten. Vergeet niet de
               puntentelling op te schrijven!
@@ -322,7 +340,7 @@ export const GameScreen: React.FC = () => {
             onPress={onFreezeNamesPress}
           />
         )}
-        {hosting && game.names_frozen && !game.names.length && (
+        {hosting && game.names_frozen && !game.unclaimed_names.length && (
           <Button
             color="#BA7CC6"
             title="Nieuwe ronde starten"
@@ -399,7 +417,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   nameCountingTitle: {
-    fontSize: 36,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 15
   }

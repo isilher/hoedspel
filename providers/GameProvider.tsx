@@ -22,6 +22,10 @@ const GET_MY_GAME = gql`
         host_id
         id
         name
+        current_name {
+          id
+          name
+        }
         players {
           name
           id
@@ -30,7 +34,11 @@ const GET_MY_GAME = gql`
             game_id
           }
         }
-        names(where: { claimed: { _eq: false } }) {
+        unclaimed_names:names(where: { claimed: { _eq: false } }) {
+          name
+          id
+        }
+        names {
           name
           id
         }
@@ -48,10 +56,12 @@ const GET_MY_GAME = gql`
 
 export const GameProvider: React.FC = ({ children }) => {
   const { auth0Id } = React.useContext(Auth0Context)
-  const {data} = useQuery(GET_MY_GAME, { variables: { userId: auth0Id }, pollInterval: 5000})
+  const {data} = useQuery(GET_MY_GAME, { variables: { userId: auth0Id }, fetchPolicy: 'network-only', pollInterval: 5000})
   const game = data?.users ? data.users[0].game : undefined
   const hosting = game && game.host_id === auth0Id
   const myTurn = game && game?.active_player?.auth_id === auth0Id
+
+  console.log(game)
 
   return (
     <GameContext.Provider value={{ game, hosting, myTurn }}>
