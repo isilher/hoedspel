@@ -1,6 +1,6 @@
 import { Alert as RNAlert, Platform } from 'react-native'
 
-const alertPolyfill = (title, description, options, extra) => {
+const alertPolyfill = (title, description, options, extra = '') => {
   const result = window.confirm([title, description].filter(Boolean).join('\n'))
 
   if (result) {

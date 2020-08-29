@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, ActivityIndicator, TextInput, FlatList, Dimensions } from 'react-native';
+import { StyleSheet, ActivityIndicator, TextInput, FlatList, Dimensions, TouchableOpacity } from 'react-native';
 
 import { Text, View, Button } from '../components/Themed';
 import { gql, useQuery, useMutation } from "@apollo/client";
@@ -62,7 +62,7 @@ const GameListItem = ({ game }) => {
 
 export default function LobbyScreen() {
   const [newGameName, setNewGameName] = React.useState('')
-  const { name, auth0Id } = React.useContext(Auth0Context)
+  const { name, auth0Id, isOma, logout } = React.useContext(Auth0Context)
   const { loading, data } = useQuery(GET_OPEN_GAMES, { pollInterval: 5000 });
   const [joinGame] = useMutation(JOIN_GAME, { refetchQueries: ['getOpenGames', 'getMyGame'] })
   const [createGame] = useMutation(
@@ -82,13 +82,29 @@ export default function LobbyScreen() {
     createGame({ variables: { name: newGameName, userId: auth0Id }})
   }
 
+  if (isOma) {
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity onPress={logout}>
+
+        <Text style={{fontSize: 72}}>🕰</Text>
+        </TouchableOpacity>
+        <Text style={{fontSize: 32, textAlign: 'center'}}>Even wachten oma, het spel begint zo!</Text>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Hoi {name}!</Text>
+      <View style={styles.row}>
+        <Text style={styles.title}>Hoi {name}!</Text>
+        <TouchableOpacity onPress={logout}>
+          <Text>🚪🏃‍♂️</Text>
+        </TouchableOpacity>
+      </View>
 
-      <Divider />
 
-      <Text style={styles.title}>Kies een spel om aan mee te doen:</Text>
+      <Text>Kies een spel om aan mee te doen:</Text>
 
       {loading && <ActivityIndicator />}
 
@@ -133,6 +149,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     width: '100%',
+    justifyContent: 'space-between'
   },
   gameListItem: {
     padding: 15,

@@ -7,8 +7,8 @@ import { gql, useMutation } from '@apollo/client'
 import { Auth0Context } from '../providers/Auth0Provider'
 import { Alert } from '../components/Alert'
 
-const END_TURN = gql`
-  mutation takeTurn($game: Int!, $userId: uuid!) {
+export const END_TURN = gql`
+  mutation takeTurn($game: Int!) {
     update_games(
       where: { id: { _eq: $game } }
       _set: { active_player_id: null }
@@ -35,11 +35,11 @@ const CLAIM_NAME = gql`
 
 export const TurnScreen = () => {
   const { game } = useContext(GameContext)
-  const { auth0Id } = useContext(Auth0Context)
+  const { auth0Id, isOma } = useContext(Auth0Context)
   const [randomAvailableName, setRandomAvailableName] = useState()
   // const randomAvailableName = sample(game.names)
   const [endTurn] = useMutation(END_TURN, {
-    variables: { game: game.id, userId: auth0Id },
+    variables: { game: game.id },
     refetchQueries: ['getMyGame']
   })
   const [claimName, { loading }] = useMutation(CLAIM_NAME, {
@@ -79,7 +79,7 @@ export const TurnScreen = () => {
 
   return (
     <View style={styles.container}>
-      {!!randomAvailableName && (
+      {!isOma && !!randomAvailableName && (
         <Button
           disabled={loading}
           color="#BA7CC6"
@@ -91,7 +91,12 @@ export const TurnScreen = () => {
       <View style={styles.container}>
         {loading && <ActivityIndicator />}
         {!!randomAvailableName && !loading && (
-          <Text style={styles.randomName}>{randomAvailableName?.name}</Text>
+          <>
+            {isOma && <Text style={{fontSize: 72, marginBottom: 30}}>🎩</Text>}
+            {isOma && <Text style={{fontSize: 32, marginBottom: 50}}>Het is jouw beurt, oma!</Text>}
+            {isOma && <Text style={{fontSize: 32, marginBottom: 150}}>De naam is:</Text>}
+            <Text style={styles.randomName}>{randomAvailableName?.name}</Text>
+          </>
         )}
         {!randomAvailableName && !loading && (
           <>
@@ -101,12 +106,12 @@ export const TurnScreen = () => {
         )}
       </View>
 
-      <Button
+      {!isOma && <Button
         color="#d22461"
         title="Beurt beëindigen"
         onPress={onEndTurnPress}
         disabled={loading}
-      />
+      />}
     </View>
   );
 }

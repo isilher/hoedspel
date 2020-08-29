@@ -6,6 +6,7 @@ import { Divider } from '../components/Divider';
 import { gql, useMutation } from '@apollo/client';
 import { Alert } from '../components/Alert';
 import { Auth0Context } from '../providers/Auth0Provider';
+import { END_TURN } from './TurnScreen';
 
 const LEAVE_GAME = gql`
   mutation leaveGame($userId: uuid!) {
@@ -31,6 +32,14 @@ const DESTROY_GAME = gql`
 const START_GAME = gql`
   mutation startGame($game: Int!) {
     update_games(where: {id: {_eq: $game}}, _set: {started: true}) {
+      returning {
+        id
+      }
+    }
+    update_users(
+      where: {auth0_id_a: {_eq: "Er is maar één oma Jo"}},
+      _set: {game_id: $game}
+    ) {
       returning {
         id
       }
@@ -79,7 +88,7 @@ const RESET_ROUND = gql`
 `;
 
 export const GameScreen: React.FC = () => {
-  const { auth0Id } = useContext(Auth0Context)
+  const { auth0Id, isOma, omaId } = useContext(Auth0Context)
   const { game, hosting } = useContext(GameContext)
   const [leaveGame] = useMutation(LEAVE_GAME, { refetchQueries: ['getOpenGames', 'getMyGame'] })
   const [destroyGame] = useMutation(DESTROY_GAME, { refetchQueries: ['getOpenGames', 'getMyGame'] })
@@ -90,6 +99,7 @@ export const GameScreen: React.FC = () => {
   const [resetRound] = useMutation(RESET_ROUND, { refetchQueries: ['getMyGame'] })
   const [newName, setNewName] = useState('')
   const [nameContribution, setNameContribution] = useState(0)
+  const [endTurn] = useMutation(END_TURN, { variables: { game: game.id}})
 
   const onLeaveGamePress = () => {
     Alert.alert(
@@ -185,6 +195,14 @@ export const GameScreen: React.FC = () => {
     takeTurn({variables: { game: game.id, userId: auth0Id}})
   }
 
+  const onOmaTurnPress = () => {
+    takeTurn({variables: { game: game.id, userId: omaId}})
+  }
+
+  const onEndTurnPress = () => {
+    endTurn()
+  }
+
   const onResetRoundPress = () => {
     Alert.alert(
       "Nieuwe ronde starten",
@@ -205,6 +223,12 @@ export const GameScreen: React.FC = () => {
       ]
     );
   }
+
+  if (isOma) return (<View style={{ padding: 15, flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+    <Text style={{fontSize: 72}}>☕️</Text>
+    <Text style={{ fontSize: 32, textAlign: 'center', marginBottom: 20}}>Hoi oma, het spel is begonnen.</Text>
+    <Text style={{ fontSize: 32, textAlign: 'center'}}>Tijdens jouw beurt zie je hier de naam uit de hoed.</Text>
+  </View>)
 
   return (
     <View style={styles.container}>
@@ -253,10 +277,30 @@ export const GameScreen: React.FC = () => {
               onPress={onTakeTurnPress}
             />
           )}
+          {hosting  && game.names_frozen && !game.active_player && !!game.names.length && (
+            <>
+              <Divider />
+              <Button
+                color="#BA7CC6"
+                title="👵 Geef de beurt aan oma Jo."
+                onPress={onOmaTurnPress}
+              />
+            </>
+          )}
           {game.names_frozen && !!game.active_player && (
             <Text style={styles.title}>
               🕺 {game.active_player.name} is aan het presenteren.
             </Text>
+          )}
+          {hosting && game.names_frozen && !!game.active_player && game.active_player.auth_id === omaId && (
+            <>
+              <Divider />
+              <Button
+                color="#BA7CC6"
+                title="👵 Oma is klaar."
+                onPress={onEndTurnPress}
+              />
+            </>
           )}
           {game.names_frozen && !game.names.length && (
             <Text>
