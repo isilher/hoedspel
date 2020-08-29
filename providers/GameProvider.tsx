@@ -56,7 +56,7 @@ const GET_MY_GAME = gql`
 
 export const GameProvider: React.FC = ({ children }) => {
   const { auth0Id } = React.useContext(Auth0Context)
-  const {data} = useQuery(GET_MY_GAME, { variables: { userId: auth0Id }, fetchPolicy: 'network-only', pollInterval: 5000})
+  const {data} = useQuery(GET_MY_GAME, { variables: { userId: auth0Id }, fetchPolicy: 'network-only', pollInterval: 2000})
   const game = data?.users ? data.users[0].game : undefined
   const hosting = game && game.host_id === auth0Id
   const myTurn = game && game?.active_player?.auth_id === auth0Id

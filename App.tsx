@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import useCachedResources from './hooks/useCachedResources';
-import { Auth0Provider } from './providers/Auth0Provider';
+import { Auth0Provider, Auth0Context } from './providers/Auth0Provider';
 import { AuthorizedApolloProvider } from './providers/ApolloProvider';
 import LobbyScreen from './screens/LobbyScreen';
 import { GameProvider, GameContext } from './providers/GameProvider';
@@ -12,9 +12,13 @@ import { TurnScreen } from './screens/TurnScreen';
 import { View } from "./components/Themed";
 
 const AppContent: React.FC = () => {
-  const { game, myTurn } = useContext(GameContext)
+  const { game, myTurn, hosting } = useContext(GameContext)
+  const { omaId } = useContext(Auth0Context)
 
   if(!!myTurn) return <TurnScreen />
+
+  if(hosting && game?.active_player?.auth_id === omaId ) return <TurnScreen />
+
   if(!!game) return <GameScreen />
 
   return <LobbyScreen />

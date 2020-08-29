@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     maxWidth: '100%'
   },
   randomName: {
-    fontSize: 36,
+    fontSize: 42,
     fontWeight: "bold",
     maxWidth: '100%',
     textAlign: 'center',

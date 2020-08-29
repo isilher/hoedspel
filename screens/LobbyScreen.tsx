@@ -63,6 +63,7 @@ const GameListItem = ({ game }) => {
 export default function LobbyScreen() {
   const [newGameName, setNewGameName] = React.useState('')
   const { name, auth0Id, isOma, logout } = React.useContext(Auth0Context)
+  const [omaLogoutCount, setOmaLogoutCount] = React.useState(1)
   const { loading, data } = useQuery(GET_OPEN_GAMES, { pollInterval: 5000 });
   const [joinGame] = useMutation(JOIN_GAME, { refetchQueries: ['getOpenGames', 'getMyGame'] })
   const [createGame] = useMutation(
@@ -82,10 +83,20 @@ export default function LobbyScreen() {
     createGame({ variables: { name: newGameName, userId: auth0Id }})
   }
 
+  const logoutOma = () => {
+    if (omaLogoutCount >= 7) {
+      setOmaLogoutCount(1)
+      logout()
+      return
+    }
+
+    setOmaLogoutCount((count) => count + 1)
+  }
+
   if (isOma) {
     return (
       <View style={styles.container}>
-        <TouchableOpacity onPress={logout}>
+        <TouchableOpacity onPress={logoutOma}>
 
         <Text style={{fontSize: 72}}>🕰</Text>
         </TouchableOpacity>

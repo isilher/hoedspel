@@ -242,7 +242,7 @@ export const GameScreen: React.FC = () => {
 
   if (isOma) return (<View style={{ padding: 15, flex: 1, justifyContent: 'center', alignItems: 'center'}}>
     <Text style={{fontSize: 72}}>☕️</Text>
-    <Text style={{ fontSize: 32, textAlign: 'center', marginBottom: 20}}>Hoi oma, het spel is begonnen.</Text>
+    <Text style={{ fontSize: 32, textAlign: 'center', marginBottom: 20}}>Hoi oma, het spel is bezig.</Text>
     <Text style={{ fontSize: 32, textAlign: 'center'}}>Tijdens jouw beurt zie je hier de naam uit de hoed.</Text>
   </View>)
 
