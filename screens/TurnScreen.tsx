@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, ActivityIndicator } from 'react-native'
+import { StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { sample } from 'lodash'
 import { View, Text, Button } from "../components/Themed"
 import { GameContext } from '../providers/GameProvider'
@@ -79,39 +79,50 @@ export const TurnScreen = () => {
 
   return (
     <View style={styles.container}>
-      {!isOma && !!randomAvailableName && (
-        <Button
-          disabled={loading}
-          color="#BA7CC6"
-          title="🎉 Geraden!"
-          onPress={onClaimNamePress}
-        />
-      )}
+
+      <Text style={{fontSize: 100, marginBottom: 30}}>🎩</Text>
 
       <View style={styles.container}>
         {loading && <ActivityIndicator />}
         {!!randomAvailableName && !loading && (
           <>
-            {isOma && <Text style={{fontSize: 72, marginBottom: 30}}>🎩</Text>}
             {isOma && <Text style={{fontSize: 32, marginBottom: 50}}>Het is jouw beurt, oma!</Text>}
             {isOma && <Text style={{fontSize: 32, marginBottom: 150}}>De naam is:</Text>}
             <Text style={styles.randomName}>{randomAvailableName?.name}</Text>
           </>
         )}
         {!randomAvailableName && !loading && (
-          <>
-            <Text style={styles.randomName}>👍</Text>
+          <View style={{flex: 1}}>
+            <Text style={{ fontSize: 72, textAlign: 'center'}}>👍</Text>
             <Text style={styles.title}>De namen zijn op! Goed gedaan.</Text>
-          </>
+          </View>
         )}
       </View>
 
-      {!isOma && <Button
-        color="#d22461"
-        title="Beurt beëindigen"
-        onPress={onEndTurnPress}
-        disabled={loading}
-      />}
+      {!isOma && (<View style={{ flexDirection: 'row' }}>
+
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity disabled={loading} onPress={onEndTurnPress} >
+            <View style={{ minHeight: 140, backgroundColor: "#d22461", padding: 10, paddingVertical: 20, borderRadius: 5, borderColor: 'purple', borderWidth: 1, justifyContent: 'space-between', alignItems: 'center'}}>
+
+              <Text style={{fontSize: 32, marginBottom: 10}}>⌛️</Text>
+              <Text style={{ textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Beurt beëindigen</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        {!!randomAvailableName && <View style={{width: 20}} />}
+
+        {!!randomAvailableName && <View style={{ flex: 1 }}>
+          <TouchableOpacity disabled={loading} onPress={onClaimNamePress} >
+            <View style={{ minHeight: 140, backgroundColor: "#CEFA05", padding: 10, paddingVertical: 20, borderRadius: 5, borderColor: 'purple', borderWidth: 1, justifyContent: 'space-between', alignItems: 'center' }}>
+
+              <Text style={{ fontSize: 32, marginBottom: 10 }}>🎉</Text>
+              <Text style={{ textAlign: 'center', color: 'purple', fontWeight: 'bold' }}>Naam is geraden!</Text>
+            </View>
+          </TouchableOpacity>
+        </View>}
+      </View>)}
     </View>
   );
 }
@@ -123,10 +134,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 50,
     paddingHorizontal: 15,
+    maxWidth: '100%'
   },
   randomName: {
-    fontSize: 72,
+    fontSize: 36,
     fontWeight: "bold",
+    maxWidth: '100%',
+    textAlign: 'center',
+    lineHeight: 72,
   },
   title: {
     fontSize: 20,
