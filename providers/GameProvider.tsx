@@ -61,8 +61,6 @@ export const GameProvider: React.FC = ({ children }) => {
   const hosting = game && game.host_id === auth0Id
   const myTurn = game && game?.active_player?.auth_id === auth0Id
 
-  console.log(game)
-
   return (
     <GameContext.Provider value={{ game, hosting, myTurn }}>
       {children}

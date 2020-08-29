@@ -95,10 +95,10 @@ export const TurnScreen = () => {
           </>
         )}
         {game?.unclaimed_names?.length < 1 && !loading && (
-          <View style={{flex: 1}}>
+          <>
             <Text style={{ fontSize: 72, textAlign: 'center'}}>👍</Text>
             <Text style={styles.title}>De namen zijn op! Goed gedaan.</Text>
-          </View>
+          </>
         )}
       </View>
 
