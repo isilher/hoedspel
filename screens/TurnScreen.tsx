@@ -8,10 +8,10 @@ import { Auth0Context } from '../providers/Auth0Provider'
 import { Alert } from '../components/Alert'
 
 export const END_TURN = gql`
-  mutation takeTurn($game: Int!) {
+  mutation takeTurn($game: Int!, $next_name: Int) {
     update_games(
       where: { id: { _eq: $game } }
-      _set: { active_player_id: null }
+      _set: { active_player_id: null, current_name_id: $next_name }
     ) {
       returning {
         id
@@ -51,34 +51,13 @@ export const TurnScreen = () => {
 
   const { isOma } = useContext(Auth0Context)
   const [endTurn] = useMutation(END_TURN, {
-    variables: { game: game.id },
+    variables: { game: game.id, next_name: sample(game.unclaimed_names)?.id },
     refetchQueries: ['getMyGame']
   })
   const [claimName, { loading }] = useMutation(CLAIM_NAME, {
     variables: { game: game.id, name: game?.current_name?.id, userId: game?.active_player?.auth_id, next_name: getNextNameId() },
     refetchQueries: ["getMyGame"],
   });
-
-  const onEndTurnPress = () => {
-    if (!game.current_name) { return endTurn() }
-
-    Alert.alert(
-      "Spel verwijderen",
-      "Weet je zeker dat je je beurt wilt afsluiten?",
-      [
-        {
-          text: 'Nee, nog niet',
-          style: 'cancel'
-        },
-        {
-          text: 'Ja, klaar!',
-          onPress: () => {
-            endTurn()
-          }
-        }
-      ]
-    )
-  }
 
   return (
     <View style={styles.container}>
@@ -105,7 +84,7 @@ export const TurnScreen = () => {
       {!isOma && (<View style={{ flexDirection: 'row' }}>
 
         <View style={{ flex: 1 }}>
-          <TouchableOpacity disabled={loading} onPress={onEndTurnPress} >
+          <TouchableOpacity disabled={loading} onPress={() => endTurn()} >
             <View style={{ minHeight: 140, backgroundColor: "#d22461", padding: 10, paddingVertical: 20, borderRadius: 5, borderColor: 'purple', borderWidth: 1, justifyContent: 'space-between', alignItems: 'center'}}>
 
               <Text style={{fontSize: 32, marginBottom: 10}}>⌛️</Text>
