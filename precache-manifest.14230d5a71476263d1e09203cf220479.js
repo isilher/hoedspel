@@ -1,15 +1,15 @@
 self.__precacheManifest = [
   {
-    "revision": "b00e5d60c65772fc5580",
-    "url": "/hoedspel/static/js/app.d5bd282e.chunk.js"
+    "revision": "c7d9213002a66fa80bbb",
+    "url": "/hoedspel/static/js/app.efd6b2db.chunk.js"
   },
   {
     "revision": "eb641bff62f782fa41c3",
     "url": "/hoedspel/static/js/runtime~app.f2c68294.js"
   },
   {
-    "revision": "098938c47114d16b77de",
-    "url": "/hoedspel/static/js/2.1712ad8e.chunk.js"
+    "revision": "0004418b63cadb75e336",
+    "url": "/hoedspel/static/js/2.65568a7f.chunk.js"
   },
   {
     "revision": "b2e0fc821c6886fb3940f85a3320003e",
@@ -64,7 +64,7 @@ self.__precacheManifest = [
     "url": "/hoedspel/./fonts/SimpleLineIcons.ttf"
   },
   {
-    "revision": "73926f6fc551ed88ef5e8845546bad00",
+    "revision": "6dd48f476bae4a8aacd4eeb0a60c3a93",
     "url": "/hoedspel/index.html"
   },
   {
@@ -81,7 +81,7 @@ self.__precacheManifest = [
   },
   {
     "revision": "e0f7f808b0e4815795fb184e7ab4e065",
-    "url": "/hoedspel/static/js/2.1712ad8e.chunk.js.LICENSE.txt"
+    "url": "/hoedspel/static/js/2.65568a7f.chunk.js.LICENSE.txt"
   },
   {
     "revision": "71033553ddc0843407efe54c23890fe2",
